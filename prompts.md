@@ -110,26 +110,3 @@
 > Rol: Como desarrollador especializado en frontend y backend de comercio electrónico:
 > 
 > Instrucción: Crea y documenta los prompts para las Pull Requests necesarias para las implementaciones realizadas en el proyecto "Los Prado." Cada Pull Request debe contener un resumen claro de los cambios realizados, su propósito, y cualquier consideración adicional que deba ser tenida en cuenta (como dependencias, pruebas o documentación adicional).
-
-**Pull Request 1: Implementación de la Página de Inicio**
-- **Título:** Implementación de la Página de Inicio con Listado de Productos y Filtros
-- **Descripción:** Esta PR incluye la implementación de la página de inicio que muestra los productos disponibles en el sistema. Se han añadido filtros por categoría y ordenamiento por precio. También se ha habilitado la navegación al detalle del producto al hacer clic en él.
-- **Consideraciones:** 
-  - Se utiliza `productsData.ts` como la fuente centralizada de productos.
-  - Asegurarse de que los estilos en Tailwind CSS sean consistentes con el diseño general.
-- **Pruebas:** Se probaron los filtros y la navegación hacia la página de detalles.
-
-**Pull Request 2: Implementación del Proceso de Pago**
-- **Título:** Implementación de la Lógica de Checkout y Confirmación de Pedido
-- **Descripción:** Esta PR implementa la página de `checkout`, permitiendo al usuario confirmar un pedido, elegir dirección y método de pago. Incluye la lógica para guardar los pedidos en `localStorage` y limpiar el carrito tras la confirmación.
-- **Consideraciones:**
-  - Asegúrate de que `localStorage` se actualice correctamente para reflejar los cambios en el historial de pedidos.
-  - Se añadieron validaciones básicas para los campos de la dirección y método de pago.
-- **Pruebas:** Se verificó la persistencia de los pedidos en `localStorage` y la limpieza del carrito después del proceso de pago.
-
-**Pull Request 3: Implementación del Historial de Pedidos**
-- **Título:** Añadir Sección "Mi Cuenta" para Mostrar el Historial de Pedidos
-- **Descripción:** Esta PR añade la funcionalidad para mostrar el historial de pedidos en la sección "Mi Cuenta". Los pedidos se obtienen de `localStorage` y se muestran con detalles como fecha, estado, y productos comprados.
-- **Consideraciones:**
-  - Verificar que el historial de pedidos se actualice correctamente al confirmar nuevos pedidos.
-- **Pruebas:** Se realizaron pruebas para asegurar que los pedidos se muestren y se actualicen correctamente en la página "Mi Cuenta."
