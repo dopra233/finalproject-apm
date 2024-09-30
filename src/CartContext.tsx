@@ -1,5 +1,10 @@
 "use client";
 import React, { createContext, useContext, useState, useEffect } from "react";
+import { db } from "./firebaseConfig";
+import { collection, getDocs, doc, setDoc } from "firebase/firestore";
+import { getUserId } from "./services/authService";
+
+// Importar la función para obtener el ID del usuario actual
 
 interface CartContextType {
   cartItems: any[];
@@ -16,16 +21,33 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
   const [cartItems, setCartItems] = useState<any[]>([]);
 
   useEffect(() => {
-    // Cargar carrito desde localStorage al inicializar el contexto
-    const storedCart = localStorage.getItem("cart");
-    if (storedCart) {
-      setCartItems(JSON.parse(storedCart));
-    }
+    const fetchCartFromFirestore = async () => {
+      const userId = await getUserId(); // Esperamos a que se resuelva el ID del usuario
+      if (!userId) return; // Si no hay usuario logueado, no hacer nada
+
+      const cartRef = doc(db, "carts", userId); // Ahora userId es un string resuelto
+      const cartSnapshot = await getDocs(collection(cartRef, "items"));
+      if (!cartSnapshot.empty) {
+        const cartData = cartSnapshot.docs.map((doc) => doc.data());
+        setCartItems(cartData);
+      }
+    };
+
+    fetchCartFromFirestore();
   }, []);
 
   useEffect(() => {
-    // Guardar carrito en localStorage cada vez que cambia el estado cartItems
-    localStorage.setItem("cart", JSON.stringify(cartItems));
+    const saveCartToFirestore = async () => {
+      const userId = await getUserId(); // Esperamos a que se resuelva el ID del usuario
+      if (!userId) return; // Si no hay usuario logueado, no hacer nada
+
+      const cartRef = doc(db, "carts", userId); // Usamos el ID del usuario resuelto
+      await setDoc(cartRef, { items: cartItems });
+    };
+
+    if (cartItems.length > 0) {
+      saveCartToFirestore();
+    }
   }, [cartItems]);
 
   const addToCart = (product: any) => {
