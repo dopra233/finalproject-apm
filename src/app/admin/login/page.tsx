@@ -23,10 +23,12 @@ const AdminLogin = () => {
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center">
       <div className="bg-white p-8 rounded-lg shadow-md w-96">
-        <h1 className="text-2xl font-bold mb-6 text-center">Admin Login</h1>
+        <h1 className="text-2xl font-bold mb-6 text-center text-black">
+          Admin Login
+        </h1>
         <form onSubmit={handleLogin}>
           <div className="mb-4">
-            <label htmlFor="username" className="block text-gray-700 mb-2">
+            <label htmlFor="username" className="block text-black mb-2">
               Usuario
             </label>
             <input
@@ -34,12 +36,12 @@ const AdminLogin = () => {
               id="username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="w-full px-3 py-2 border rounded-lg"
+              className="w-full px-3 py-2 border rounded-lg text-black"
               required
             />
           </div>
           <div className="mb-6">
-            <label htmlFor="password" className="block text-gray-700 mb-2">
+            <label htmlFor="password" className="block text-black mb-2">
               Contraseña
             </label>
             <input
@@ -47,7 +49,7 @@ const AdminLogin = () => {
               id="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-3 py-2 border rounded-lg"
+              className="w-full px-3 py-2 border rounded-lg text-black"
               required
             />
           </div>
