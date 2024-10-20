@@ -11,7 +11,10 @@ const CheckoutPage = () => {
   const [message, setMessage] = useState("");
 
   // Calcular el total del pedido
-  const totalAmount = cartItems.reduce((total, item) => total + item.price, 0);
+  const totalAmount = cartItems.reduce(
+    (total, item) => total + item.price * (item.quantity || 1),
+    0
+  ); // Multiplicar por la cantidad
 
   // Manejar la confirmación del pedido
   const handleConfirmOrder = async () => {
@@ -75,20 +78,16 @@ const CheckoutPage = () => {
               <h3 className="text-xl font-bold mb-4">Resumen del Pedido</h3>
               {cartItems.map((item, index) => (
                 <div key={index} className="flex justify-between mb-2">
-                  <span className="text-black">{item.name}</span>{" "}
-                  {/* Cambiado a text-black */}
+                  <span className="text-black">{item.name}</span>
                   <span className="text-black">
-                    ${item.price.toFixed(2)}
-                  </span>{" "}
-                  {/* Cambiado a text-black */}
+                    ${(item.price * (item.quantity || 1)).toFixed(2)}{" "}
+                    {/* Multiplicar por la cantidad */}
+                  </span>
                 </div>
               ))}
               <div className="flex justify-between mt-4 font-bold">
                 <span>Total:</span>
-                <span className="text-black">
-                  ${totalAmount.toFixed(2)}
-                </span>{" "}
-                {/* Cambiado a text-black */}
+                <span className="text-black">${totalAmount.toFixed(2)}</span>
               </div>
 
               {/* Formulario para dirección y método de pago */}
@@ -100,7 +99,7 @@ const CheckoutPage = () => {
                   type="text"
                   value={address}
                   onChange={(e) => setAddress(e.target.value)}
-                  className="w-full px-4 py-2 border rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-blue-500" // Cambiado a text-black
+                  className="w-full px-4 py-2 border rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="Ingresa tu dirección de envío"
                 />
 
@@ -110,7 +109,7 @@ const CheckoutPage = () => {
                 <select
                   value={paymentMethod}
                   onChange={(e) => setPaymentMethod(e.target.value)}
-                  className="w-full px-4 py-2 border rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-blue-500" // Cambiado a text-black
+                  className="w-full px-4 py-2 border rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="Tarjeta de Crédito">Tarjeta de Crédito</option>
                   <option value="PayPal">PayPal</option>
