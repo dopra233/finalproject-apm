@@ -41,7 +41,7 @@ const ProductDetailPage = ({ params }: { params: { id: string } }) => {
           <p className="text-gray-700 mb-4">Categoría: {product.category}</p>
           <button
             onClick={() => {
-              addToCart(product);
+              addToCart({ ...product, quantity: 1, id: String(product.id) }); // Convertir id a string
               alert("Producto añadido al carrito.");
               router.push("/cart"); // Opcional: Navegar al carrito después de añadir el producto
             }}

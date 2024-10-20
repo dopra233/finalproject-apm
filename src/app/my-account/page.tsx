@@ -1,58 +1,90 @@
 "use client";
+import { useEffect, useState } from "react";
+import { getUserOrders } from "@/services/firestoreService";
 import Header from "@/components/Header";
-import React, { useState, useEffect } from "react";
 
-const MyAccountPage = () => {
-  const [orders, setOrders] = useState<any[]>([]);
+// Definimos una interfaz para el tipo de Order
+interface Order {
+  id: string;
+  date: string;
+  status: string;
+  total: number;
+  address: string;
+  paymentMethod: string;
+  items: Array<{
+    name: string;
+    quantity: number;
+  }>;
+}
 
-  // Cargar los pedidos desde localStorage al iniciar la página
+const MyAccount = () => {
+  const [orders, setOrders] = useState<Order[]>([]); // Especificamos el tipo aquí
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
   useEffect(() => {
-    const storedOrders = localStorage.getItem("orders");
-    if (storedOrders) {
-      setOrders(JSON.parse(storedOrders));
-    }
+    const fetchOrders = async () => {
+      try {
+        const userId = "user123";
+        const userOrders = await getUserOrders(userId);
+        setOrders(userOrders as Order[]); // Aseguramos que userOrders es del tipo Order[]
+        setLoading(false);
+      } catch (error) {
+        console.error("Error al obtener los pedidos:", error);
+        setError(
+          "No se pudieron cargar los pedidos. Por favor, intenta de nuevo más tarde."
+        );
+        setLoading(false);
+      }
+    };
+
+    fetchOrders();
   }, []);
+
+  if (loading) return <div>Cargando...</div>;
+  if (error) return <div>{error}</div>;
 
   return (
     <div>
       <Header />
       <div className="p-4 bg-gray-100 min-h-screen">
-        <h2 className="text-3xl font-bold mb-6 text-gray-800">
-          Mi Cuenta - Historial de Pedidos
+        <h1 className="text-3xl font-bold mb-6 text-gray-800">Mi Cuenta</h1>
+        <h2 className="text-2xl font-bold mb-4 text-gray-700">
+          Historial de Pedidos
         </h2>
         {orders.length === 0 ? (
-          <p className="text-gray-600">No hay pedidos realizados.</p>
+          <p className="text-gray-700">No tienes pedidos aún.</p>
         ) : (
-          <div className="bg-white p-4 rounded-lg shadow-md">
-            {orders.map((order, index) => (
-              <div key={index} className="mb-4 border-b pb-4">
-                <h3 className="text-lg font-bold">Pedido #{order.id}</h3>
-                <p className="text-gray-700">Fecha: {order.date}</p>
-                <p className="text-gray-700">Estado: {order.status}</p>
-                <p className="text-gray-700">Dirección: {order.address}</p>
-                <p className="text-gray-700">
-                  Método de Pago: {order.paymentMethod}
-                </p>
-                <div className="mt-2">
-                  <h4 className="font-bold">Productos:</h4>
-                  <ul className="list-disc list-inside">
-                    {order.items.map((item: any, itemIndex: number) => (
-                      <li key={itemIndex} className="text-gray-700">
-                        {item.name} - ${item.price.toFixed(2)}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-                <p className="text-gray-700 font-bold mt-2">
-                  Total: ${order.total.toFixed(2)}
-                </p>
-              </div>
-            ))}
-          </div>
+          orders.map((order) => (
+            <div
+              key={order.id}
+              className="bg-white p-4 rounded-lg shadow-md mb-4"
+            >
+              <p className="text-gray-800">
+                Fecha: {new Date(order.date).toLocaleDateString()}
+              </p>
+              <p className="text-gray-800">Estado: {order.status}</p>
+              <p className="text-gray-800">Total: ${order.total.toFixed(2)}</p>
+              <p className="text-gray-800">
+                Dirección de envío: {order.address}
+              </p>
+              <p className="text-gray-800">
+                Método de pago: {order.paymentMethod}
+              </p>
+              <h3 className="font-bold mt-2 text-gray-800">Productos:</h3>
+              <ul className="text-gray-700">
+                {order.items.map((item, index) => (
+                  <li key={index}>
+                    {item.name} - Cantidad: {item.quantity}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))
         )}
       </div>
     </div>
   );
 };
 
-export default MyAccountPage;
+export default MyAccount;

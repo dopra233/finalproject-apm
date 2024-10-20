@@ -6,11 +6,18 @@ import { getUserId } from "./services/authService";
 
 // Importar la función para obtener el ID del usuario actual
 
+interface CartItem {
+  id: string;
+  name: string;
+  price: number;
+  quantity: number; // Añadir cantidad aquí
+}
+
 interface CartContextType {
-  cartItems: any[];
-  addToCart: (product: any) => void;
+  cartItems: CartItem[];
+  addToCart: (item: CartItem) => void;
   removeFromCart: (index: number) => void;
-  setCartItems: React.Dispatch<React.SetStateAction<any[]>>;
+  setCartItems: React.Dispatch<React.SetStateAction<CartItem[]>>; // Para poder limpiar el carrito
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -18,7 +25,7 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [cartItems, setCartItems] = useState<any[]>([]);
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
 
   useEffect(() => {
     const fetchCartFromFirestore = async () => {
@@ -28,7 +35,15 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
       const cartRef = doc(db, "carts", userId); // Ahora userId es un string resuelto
       const cartSnapshot = await getDocs(collection(cartRef, "items"));
       if (!cartSnapshot.empty) {
-        const cartData = cartSnapshot.docs.map((doc) => doc.data());
+        const cartData = cartSnapshot.docs.map((doc) => {
+          const data = doc.data();
+          return {
+            id: doc.id, // Asegúrate de incluir el id
+            name: data.name,
+            price: data.price,
+            quantity: data.quantity,
+          } as CartItem; // Asegúrate de que sea del tipo CartItem
+        });
         setCartItems(cartData);
       }
     };
@@ -50,12 +65,23 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   }, [cartItems]);
 
-  const addToCart = (product: any) => {
-    setCartItems((prevItems) => [...prevItems, product]);
+  const addToCart = (item: any) => {
+    setCartItems((prevItems) => {
+      const existingItem = prevItems.find((i) => i.id === item.id);
+      if (existingItem) {
+        // Aquí se suma la cantidad existente con la nueva cantidad
+        return prevItems.map((i) =>
+          i.id === item.id
+            ? { ...i, quantity: item.quantity + existingItem.quantity }
+            : i
+        );
+      }
+      return [...prevItems, item]; // Agregar nuevo producto
+    });
   };
 
   const removeFromCart = (index: number) => {
-    setCartItems((prevItems) => prevItems.filter((_, i) => i !== index));
+    setCartItems((prev) => prev.filter((_, i) => i !== index));
   };
 
   return (
